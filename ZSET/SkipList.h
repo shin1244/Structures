@@ -103,7 +103,7 @@ public:
 		_size++;
 	}
 
-	void erase(const Key& key) {
+	bool erase(const Key& key) {
 		Node* update[MAX_LEVEL + 1];
 		for (int i = 0; i <= MAX_LEVEL; ++i) update[i] = nullptr;
 		Node* cur = _head;
@@ -116,7 +116,7 @@ public:
 
 		cur = cur->forward[0];
 		if (cur != nullptr && cur->key == key) {
-			for (i = 0; i <= _level; ++i) {
+			for (int i = 0; i <= _level; ++i) {
 				if (update[i]->forward[i] != cur) break;
 				update[i]->forward[i] = cur->forward[i];
 			}
