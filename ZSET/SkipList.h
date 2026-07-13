@@ -1,5 +1,6 @@
 #pragma once
 #include <random>
+#include <vector>
 
 template<typename Key, typename Value>
 class SkipList {
@@ -26,6 +27,8 @@ private:
 
 	Node* _head;
 	int _level;
+	int _size;
+
 	int randomLevel() {
 		static std::random_device rd;
 		static std::mt19937 gen(rd());
@@ -39,6 +42,7 @@ private:
 public:
 	SkipList() {
 		_level = 0;
+		_size = 0;
 		_head = new Node(Key{}, Value{}, MAX_LEVEL);
 	}
 	~SkipList() {
@@ -65,6 +69,7 @@ public:
 		}
 		return nullptr;
 	}
+
 	void insert(const Key& key, const Value& value) {
 		Node* update[MAX_LEVEL + 1];
 		for (int i = 0; i <= MAX_LEVEL; ++i) update[i] = nullptr;
@@ -94,5 +99,53 @@ public:
 			n->forward[i] = update[i]->forward[i];
 			update[i]->forward[i] = n;
 		}
+
+		_size++;
 	}
+
+	void erase(const Key& key) {
+		Node* update[MAX_LEVEL + 1];
+		for (int i = 0; i <= MAX_LEVEL; ++i) update[i] = nullptr;
+		Node* cur = _head;
+
+		for (int i = _level; i >= 0; --i) {
+			while (cur->forward[i] != nullptr && cur->forward[i]->key < key)
+				cur = cur->forward[i];
+			update[i] = cur;
+		}
+
+		cur = cur->forward[0];
+		if (cur != nullptr && cur->key == key) {
+			for (i = 0; i <= _level; ++i) {
+				if (update[i]->forward[i] != cur) break;
+				update[i]->forward[i] = cur->forward[i];
+			}
+			delete cur;
+
+			while (_level > 0 && _head->forward[_level] == nullptr)
+				_level--;
+			_size--;
+			return true;
+		}
+		return false;
+	}
+
+	void rangeSearch(Key& k1, Key& k2, std::vector<Node*>& v) {
+		if (k1 > k2) return;
+
+		Node* cur = _head;
+		for (int i = _level; i >= 0; --i) {
+			while (cur->forward[i] != nullptr && cur->forward[i]->key < k1)
+				cur = cur->forward[i];
+		}
+		cur = cur->forward[0];
+		
+		while (cur != nullptr && cur->key <= k2){
+			v.push_back(cur);
+			cur = cur->forward[0];
+		}
+	}
+
+	int size() { return _size; }
+	bool empty() { return _size == 0; }
 };
