@@ -10,7 +10,11 @@ private:
 	{
 		Key key;
 		Value value;
-		Node** forward;
+		struct Link {
+			Node* next = nullptr;
+			int span = 0;
+		};
+		Link* forward;
 		int level;
 
 		Node(const Key& k, const Value& v, int lvl) {
