@@ -14,7 +14,7 @@ private:
 			Node* next = nullptr;
 			int span = 0;
 		};
-		Link* forward;
+		Link* forward
 		int level;
 
 		Node(const Key& k, const Value& v, int lvl) {
