@@ -14,15 +14,14 @@ private:
 			Node* next = nullptr;
 			int span = 0;
 		};
-		Link* forward
+		Link* forward;
 		int level;
 
 		Node(const Key& k, const Value& v, int lvl) {
 			key = k;
 			value = v;
 			level = lvl;
-			forward = new Node*[lvl + 1];
-			for (int i = 0; i <= lvl; ++i) forward[i] = nullptr;
+			forward = new Link[lvl + 1];
 		}
 		~Node() {
 			delete[] forward;
@@ -76,12 +75,20 @@ public:
 
 	void insert(const Key& key, const Value& value) {
 		Node* update[MAX_LEVEL + 1];
-		for (int i = 0; i <= MAX_LEVEL; ++i) update[i] = nullptr;
+		int rank[MAX_LEVEL + 1];
+		for (int i = 0; i <= MAX_LEVEL; ++i) {
+			update[i] = nullptr;
+			rank[i] = 0;
+		}
+
 
 		Node* cur = _head;
 		for (int i = _level; i >= 0; --i) {
-			while (cur->forward[i] != nullptr && cur->forward[i]->key < key)
-				cur = cur->forward[i];
+			rank[i] = (i == _level ? 0 : rank[i + 1]);
+			while (cur->forward[i] != nullptr && cur->forward[i]->key < key) {
+				rank[i] += cur->forward[i].span;
+				cur = cur->forward[i].next;
+			}
 			update[i] = cur;
 		}
 
@@ -100,8 +107,10 @@ public:
 
 		Node* n = new Node(key, value, lvl);
 		for (int i = 0; i <= lvl; ++i) {
-			n->forward[i] = update[i]->forward[i];
-			update[i]->forward[i] = n;
+			n->forward[i].span = rank[i];
+			n->forward[i].next = cur;
+			update[i]->forward[i].span = ;
+			update[i]->forward[i].next = n;
 		}
 
 		_size++;
