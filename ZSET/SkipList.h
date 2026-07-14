@@ -60,6 +60,11 @@ public:
 	}
 
 	Node* search(const Key& key) const {
+		Node* cur = _head;
+		for (int i = _level; i >= 0; --i) {
+			while (cur->forward[i].next != nullptr && cur->forward[i].next->key < key)
+				cur = cur->forward[i].next;
+		}
 	}
 
 	void insert(const Key& key, const Value& value) {
