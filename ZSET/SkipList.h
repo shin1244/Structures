@@ -218,4 +218,22 @@ public:
 		}
 		return -1;
 	}
+
+	Node* getByRank(int r) const
+	{
+		if (r < 1 || r > size_) return nullptr;
+		Node* cur = head_;
+		int rank = 0;
+		for (int i = level_; i >= 0; --i)
+		{
+			while (cur->forward[i].next != nullptr
+				&& rank + cur->forward[i].span <= r)
+			{
+				rank += cur->forward[i].span;
+				cur = cur->forward[i].next;
+			}
+			if (rank == r) return cur;
+		}
+		return nullptr;
+	}
 };
