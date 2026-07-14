@@ -60,103 +60,15 @@ public:
 	}
 
 	Node* search(const Key& key) const {
-		Node* cur = _head;
-		for (int i = _level; i >= 0; --i) {
-			while (cur->forward[i] != nullptr && cur->forward[i]->key < key) {
-				cur = cur->forward[i];
-			}
-		}
-		cur = cur->forward[0];
-		if (cur != nullptr && cur->key == key) {
-			return cur;
-		}
-		return nullptr;
 	}
 
 	void insert(const Key& key, const Value& value) {
-		Node* update[MAX_LEVEL + 1];
-		int rank[MAX_LEVEL + 1];
-		for (int i = 0; i <= MAX_LEVEL; ++i) {
-			update[i] = nullptr;
-			rank[i] = 0;
-		}
-
-
-		Node* cur = _head;
-		for (int i = _level; i >= 0; --i) {
-			rank[i] = (i == _level ? 0 : rank[i + 1]);
-			while (cur->forward[i] != nullptr && cur->forward[i]->key < key) {
-				rank[i] += cur->forward[i].span;
-				cur = cur->forward[i].next;
-			}
-			update[i] = cur;
-		}
-
-		cur = cur->forward[0];
-		if (cur != nullptr && cur->key == key) {
-			cur->value = value;
-			return;
-		}
-
-		int lvl = randomLevel();
-		if (lvl > _level) {
-			for (int i = _level + 1; i <= lvl; ++i)
-				update[i] = _head;
-			_level = lvl;
-		}
-
-		Node* n = new Node(key, value, lvl);
-		for (int i = 0; i <= lvl; ++i) {
-			n->forward[i].span = rank[i];
-			n->forward[i].next = cur;
-			update[i]->forward[i].span = ;
-			update[i]->forward[i].next = n;
-		}
-
-		_size++;
 	}
 
 	bool erase(const Key& key) {
-		Node* update[MAX_LEVEL + 1];
-		for (int i = 0; i <= MAX_LEVEL; ++i) update[i] = nullptr;
-		Node* cur = _head;
-
-		for (int i = _level; i >= 0; --i) {
-			while (cur->forward[i] != nullptr && cur->forward[i]->key < key)
-				cur = cur->forward[i];
-			update[i] = cur;
-		}
-
-		cur = cur->forward[0];
-		if (cur != nullptr && cur->key == key) {
-			for (int i = 0; i <= _level; ++i) {
-				if (update[i]->forward[i] != cur) break;
-				update[i]->forward[i] = cur->forward[i];
-			}
-			delete cur;
-
-			while (_level > 0 && _head->forward[_level] == nullptr)
-				_level--;
-			_size--;
-			return true;
-		}
-		return false;
 	}
 
 	void rangeSearch(Key& k1, Key& k2, std::vector<Node*>& v) {
-		if (k1 > k2) return;
-
-		Node* cur = _head;
-		for (int i = _level; i >= 0; --i) {
-			while (cur->forward[i] != nullptr && cur->forward[i]->key < k1)
-				cur = cur->forward[i];
-		}
-		cur = cur->forward[0];
-		
-		while (cur != nullptr && cur->key <= k2){
-			v.push_back(cur);
-			cur = cur->forward[0];
-		}
 	}
 
 	int size() { return _size; }
