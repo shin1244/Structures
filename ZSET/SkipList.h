@@ -219,7 +219,15 @@ public:
 		return -1;
 	}
 
-	Node* getByRank(int r) const
+	bool getByRank(const int r, Key& outKey, Value& outValue) const {
+		Node* node = getByRankNode(r);
+		if (node == nullptr) return false;
+		outKey = node->key;
+		outValue = node->value;
+		return true;
+	}
+
+	Node* getByRankNode(int r) const
 	{
 		if (r < 1 || r > size_) return nullptr;
 		Node* cur = head_;
