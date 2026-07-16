@@ -1,14 +1,14 @@
 #pragma once
 #include <array>
+#include <atomic>
 
 template<typename T, size_t N>
 class RingBuffer
 {
 private:
 	std::array<T, N> buffer_ = {};
-	size_t head_ = 0;
-	size_t tail_ = 0;
-	size_t count_ = 0;
+	std::atomic<size_t> head_{ 0 };
+	std::atomic<size_t> tail_{ 0 };
 public:
 	bool empty() const { return count_ == 0; }
 	bool full() const { return count_ == N; }
