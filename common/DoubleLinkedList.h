@@ -36,7 +36,7 @@ public:
     {
         if (n->prev) n->prev->next = n->next;
         else head_ = n->next;
-        n->next->prev = n->prev;
+        if (n->next) n->next->prev = n->prev;
         delete n;
     }
     bool  empty() const
