@@ -53,10 +53,31 @@ public:
 		}
 	}
 
-	/*bool pop(T& out)
+	bool pop(T& out)
 	{
 		size_t h = head_.load(std::memory_order_relaxed);
 
-		buffer_[h]
-	}*/
+		while (true)
+		{
+			Slot& slot = buffer_[h % N];
+			size_t seq = slot.seq.load(std::memory_order_acquire);
+			intptr_t diff = static_cast<intptr_t>(seq) - static_cast<intptr_t>(h);
+			if (diff == 1)
+			{
+				if (head_.compare_exchange_weak(h, h + 1, std::memory_order_relaxed))
+				{
+					out = buffer_[h % N].data;
+					slot.seq.store(h + N, std::memory_order_release);
+					return true;
+				}
+			}
+			else if (diff < 0)
+			{
+				return false;
+			} else
+			{
+				h = head_.load(std::memory_order_relaxed);
+			}
+		}
+	}
 };
